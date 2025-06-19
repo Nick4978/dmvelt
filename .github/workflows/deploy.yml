@@ -21,7 +21,7 @@ jobs:
       - name: Build and push Docker image
         env:
           AWS_REGION: us-east-1
-          ECR_REPOSITORY: your-ecr-repo
+          ECR_REPOSITORY: dmvelt
         run: |
           IMAGE_TAG=latest
           docker build -t $ECR_REPOSITORY:$IMAGE_TAG .
@@ -30,4 +30,4 @@ jobs:
 
       - name: Deploy to AWS App Runner
         run: |
-          aws apprunner update-service --service-arn <your-service-arn> --source-configuration ImageRepository="{ImageIdentifier=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/your-ecr-repo:latest,ImageRepositoryType=ECR}"
+          aws apprunner update-service --service-arn <your-service-arn> --source-configuration ImageRepository="{ImageIdentifier=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/dmvelt:latest,ImageRepositoryType=ECR}"
