@@ -1,43 +1,54 @@
-name: Build and Deploy to Azure
+name: Deploy to Azure
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
 
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
+    env:
+      AZURE_CONTAINER_REGISTRY: yourregistry.azurecr.io
+      RESOURCE_GROUP: your-resource-group
+      CONTAINER_APP_NAME_FRONTEND: tankmates-frontend
+      CONTAINER_APP_NAME_BACKEND: tankmates-backend
+      AZURE_SUBSCRIPTION: your-subscription-id
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
     steps:
-    - name: Checkout Code
-      uses: actions/checkout@v3
+    - uses: actions/checkout@v3
 
-    - name: Login to Azure
+    - name: Set up Docker
+      uses: docker/setup-buildx-action@v2
+
+    - name: Log in to Azure
       uses: azure/login@v1
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-    - name: Azure Container Registry Login
-      uses: azure/docker-login@v1
-      with:
-        login-server: myregistry.azurecr.io
-        username: ${{ secrets.REGISTRY_USERNAME }}
-        password: ${{ secrets.REGISTRY_PASSWORD }}
+    - name: Log in to ACR
+      run: az acr login --name yourregistry
 
-    - name: Build and Push Images
+    - name: Build and push frontend
       run: |
-        docker-compose -f docker-compose.yml build
-        docker tag frontend myregistry.azurecr.io/frontend:latest
-        docker tag backend myregistry.azurecr.io/backend:latest
-        docker push myregistry.azurecr.io/frontend:latest
-        docker push myregistry.azurecr.io/backend:latest
+        docker build -t $AZURE_CONTAINER_REGISTRY/frontend:latest ./frontend
+        docker push $AZURE_CONTAINER_REGISTRY/frontend:latest
 
-    - name: Deploy to Azure Web App
-      uses: azure/webapps-deploy@v2
-      with:
-        app-name: your-app-name
-        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-        images: |
-          myregistry.azurecr.io/frontend:latest
-          myregistry.azurecr.io/backend:latest
+    - name: Build and push backend
+      run: |
+        docker build -t $AZURE_CONTAINER_REGISTRY/backend:latest ./backend
+        docker push $AZURE_CONTAINER_REGISTRY/backend:latest
+
+    - name: Deploy to Azure Container Apps
+      run: |
+        az containerapp update --name $CONTAINER_APP_NAME_FRONTEND \
+          --resource-group $RESOURCE_GROUP \
+          --image $AZURE_CONTAINER_REGISTRY/frontend:latest
+
+        az containerapp update --name $CONTAINER_APP_NAME_BACKEND \
+          --resource-group $RESOURCE_GROUP \
+          --image $AZURE_CONTAINER_REGISTRY/backend:latest
+
+    - name: Run Prisma DB Seed
+      run: |
+        docker run --rm -e DATABASE_URL=$DATABASE_URL $AZURE_CONTAINER_REGISTRY/backend:latest npm run seed
