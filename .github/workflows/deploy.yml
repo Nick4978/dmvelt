@@ -1,54 +1,33 @@
-name: Deploy to Azure
+name: Deploy to AWS App Runner
 
 on:
   push:
     branches: [main]
 
 jobs:
-  build-and-deploy:
+  deploy:
     runs-on: ubuntu-latest
-    env:
-      AZURE_CONTAINER_REGISTRY: yourregistry.azurecr.io
-      RESOURCE_GROUP: your-resource-group
-      CONTAINER_APP_NAME_FRONTEND: tankmates-frontend
-      CONTAINER_APP_NAME_BACKEND: tankmates-backend
-      AZURE_SUBSCRIPTION: your-subscription-id
-      DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
     steps:
-    - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Set up Docker
-      uses: docker/setup-buildx-action@v2
+      - name: Set up Docker
+        uses: docker/setup-buildx-action@v2
 
-    - name: Log in to Azure
-      uses: azure/login@v1
-      with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: Log in to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v1
 
-    - name: Log in to ACR
-      run: az acr login --name yourregistry
+      - name: Build and push Docker image
+        env:
+          AWS_REGION: us-east-1
+          ECR_REPOSITORY: your-ecr-repo
+        run: |
+          IMAGE_TAG=latest
+          docker build -t $ECR_REPOSITORY:$IMAGE_TAG .
+          docker tag $ECR_REPOSITORY:$IMAGE_TAG ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY:$IMAGE_TAG
 
-    - name: Build and push frontend
-      run: |
-        docker build -t $AZURE_CONTAINER_REGISTRY/frontend:latest ./frontend
-        docker push $AZURE_CONTAINER_REGISTRY/frontend:latest
-
-    - name: Build and push backend
-      run: |
-        docker build -t $AZURE_CONTAINER_REGISTRY/backend:latest ./backend
-        docker push $AZURE_CONTAINER_REGISTRY/backend:latest
-
-    - name: Deploy to Azure Container Apps
-      run: |
-        az containerapp update --name $CONTAINER_APP_NAME_FRONTEND \
-          --resource-group $RESOURCE_GROUP \
-          --image $AZURE_CONTAINER_REGISTRY/frontend:latest
-
-        az containerapp update --name $CONTAINER_APP_NAME_BACKEND \
-          --resource-group $RESOURCE_GROUP \
-          --image $AZURE_CONTAINER_REGISTRY/backend:latest
-
-    - name: Run Prisma DB Seed
-      run: |
-        docker run --rm -e DATABASE_URL=$DATABASE_URL $AZURE_CONTAINER_REGISTRY/backend:latest npm run seed
+      - name: Deploy to AWS App Runner
+        run: |
+          aws apprunner update-service --service-arn <your-service-arn> --source-configuration ImageRepository="{ImageIdentifier=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/your-ecr-repo:latest,ImageRepositoryType=ECR}"
