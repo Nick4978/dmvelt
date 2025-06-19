@@ -1,0 +1,43 @@
+name: Build and Deploy to Azure
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    - name: Login to Azure
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Azure Container Registry Login
+      uses: azure/docker-login@v1
+      with:
+        login-server: myregistry.azurecr.io
+        username: ${{ secrets.REGISTRY_USERNAME }}
+        password: ${{ secrets.REGISTRY_PASSWORD }}
+
+    - name: Build and Push Images
+      run: |
+        docker-compose -f docker-compose.yml build
+        docker tag frontend myregistry.azurecr.io/frontend:latest
+        docker tag backend myregistry.azurecr.io/backend:latest
+        docker push myregistry.azurecr.io/frontend:latest
+        docker push myregistry.azurecr.io/backend:latest
+
+    - name: Deploy to Azure Web App
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: your-app-name
+        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+        images: |
+          myregistry.azurecr.io/frontend:latest
+          myregistry.azurecr.io/backend:latest
