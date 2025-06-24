@@ -14,3 +14,32 @@ pnpm-debug.log*
 Thumbs.db
 .env
 .env.*  # if using env splitting (like .env.development)
+
+# Next.js build output
+.next/
+out/
+
+# Static export (if used)
+out/
+
+# TypeScript build output
+dist/
+build/
+
+# Prisma generated files (optional if re-generable)
+prisma/dev.db
+prisma/dev.sqlite
+prisma/migrations/
+*.db
+
+# Docker volumes and build artifacts
+*.tar
+docker-compose.override.yml
+
+# Ignore GitHub Actions cache
+.github/workflows/*.log
+
+.vscode/
+.idea/
+*.swp
+
