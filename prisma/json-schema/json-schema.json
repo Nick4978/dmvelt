@@ -1,0 +1,284 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "Dealer": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        },
+        "address": {
+          "type": "string",
+          "default": ""
+        },
+        "city": {
+          "type": "string",
+          "default": ""
+        },
+        "state": {
+          "type": "string",
+          "default": ""
+        },
+        "zipCode": {
+          "type": "string",
+          "default": ""
+        },
+        "phone": {
+          "type": "string",
+          "default": ""
+        },
+        "email": {
+          "type": "string",
+          "default": ""
+        },
+        "lienHolderId": {
+          "type": "string",
+          "default": ""
+        },
+        "isActive": {
+          "type": "boolean",
+          "default": true
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "users": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/DealerUser"
+          }
+        },
+        "liens": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Lien"
+          }
+        }
+      }
+    },
+    "User": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "address": {
+          "type": "string",
+          "default": ""
+        },
+        "city": {
+          "type": "string",
+          "default": ""
+        },
+        "state": {
+          "type": "string",
+          "default": ""
+        },
+        "zipCode": {
+          "type": "string",
+          "default": ""
+        },
+        "phone": {
+          "type": "string",
+          "default": ""
+        },
+        "email": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string",
+          "default": ""
+        },
+        "password": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "isLocalAdmin": {
+          "type": "boolean",
+          "default": false
+        },
+        "isGlobalAdmin": {
+          "type": "boolean",
+          "default": false
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "isActive": {
+          "type": "boolean",
+          "default": true
+        },
+        "users": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/DealerUser"
+          }
+        },
+        "passwordTokens": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/PasswordToken"
+          }
+        }
+      }
+    },
+    "DealerUser": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "isActive": {
+          "type": "boolean",
+          "default": true
+        },
+        "dealer": {
+          "$ref": "#/definitions/Dealer"
+        },
+        "user": {
+          "$ref": "#/definitions/User"
+        }
+      }
+    },
+    "Lien": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "rank": {
+          "type": "integer",
+          "default": 1
+        },
+        "status": {
+          "type": "integer",
+          "default": 0
+        },
+        "lienholder": {
+          "type": "string",
+          "default": ""
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "readFlag": {
+          "type": "boolean",
+          "default": false
+        },
+        "dealer": {
+          "$ref": "#/definitions/Dealer"
+        },
+        "vehicle": {
+          "$ref": "#/definitions/Vehicle"
+        }
+      }
+    },
+    "Vehicle": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "vin": {
+          "type": "string"
+        },
+        "make": {
+          "type": "string",
+          "default": ""
+        },
+        "model": {
+          "type": "string",
+          "default": ""
+        },
+        "year": {
+          "type": "integer",
+          "default": 0
+        },
+        "color": {
+          "type": "string",
+          "default": ""
+        },
+        "mileage": {
+          "type": "integer",
+          "default": 0
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "liens": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Lien"
+          }
+        }
+      }
+    },
+    "PasswordToken": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "token": {
+          "type": "string"
+        },
+        "user": {
+          "$ref": "#/definitions/User"
+        },
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "type": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "type": "object",
+  "properties": {
+    "dealer": {
+      "$ref": "#/definitions/Dealer"
+    },
+    "user": {
+      "$ref": "#/definitions/User"
+    },
+    "dealerUser": {
+      "$ref": "#/definitions/DealerUser"
+    },
+    "lien": {
+      "$ref": "#/definitions/Lien"
+    },
+    "vehicle": {
+      "$ref": "#/definitions/Vehicle"
+    },
+    "passwordToken": {
+      "$ref": "#/definitions/PasswordToken"
+    }
+  }
+}

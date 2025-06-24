@@ -1,0 +1,42 @@
+{
+  "name": "lien-manager-backend",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "clean": "rm -rf dist",
+    "dev": "ts-node-dev --respawn --transpile-only ./src/server.ts",
+    "build": "npm run clean && tsc",
+    "start": "node dist/server.js",
+    "generate:types": "json2ts -i ./prisma/json-schema/json-schema.json -o ../shared/api-types.ts"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.10.0",
+    "bcrypt": "^6.0.0",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2"
+  },
+  "devDependencies": {
+    "@faker-js/faker": "^9.8.0",
+    "@types/bcrypt": "^5.0.2",
+    "@types/cookie-parser": "^1.4.9",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.3",
+    "@types/google.maps": "^3.58.1",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^24.0.3",
+    "json-schema-to-typescript": "^15.0.4",
+    "nodemon": "^3.0.0",
+    "prisma": "^6.10.0",
+    "prisma-json-schema-generator": "^5.1.5",
+    "ts-node": "^10.9.2",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.8.3",
+    "uuid": "^11.1.0"
+  },
+  "prisma": {
+    "seed": "ts-node ./prisma/seed.ts"
+  }
+}

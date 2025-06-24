@@ -1,0 +1,14 @@
+{
+  "/_not-found": "app/_not-found.js",
+  "/admin/page": "app/admin/page.js",
+  "/forgot-password/page": "app/forgot-password/page.js",
+  "/set-password/page": "app/set-password/page.js",
+  "/login/page": "app/login/page.js",
+  "/dashboard/users/page": "app/dashboard/users/page.js",
+  "/dashboard/dealers/page": "app/dashboard/dealers/page.js",
+  "/dashboard/liens/page": "app/dashboard/liens/page.js",
+  "/dashboard/page": "app/dashboard/page.js",
+  "/dashboard/dealers/new/page": "app/dashboard/dealers/new/page.js",
+  "/dashboard/users/new/page": "app/dashboard/users/new/page.js",
+  "/dashboard/liens/[id]/page": "app/dashboard/liens/[id]/page.js"
+}

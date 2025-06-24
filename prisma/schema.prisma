@@ -1,0 +1,106 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-3.0.x"]
+}
+
+/* generator jsonSchema {
+  provider = "prisma-json-schema-generator"
+} */
+
+generator prismaTypesGenerator {
+  provider = "prisma-types-generator"
+  output   = "../shared/generated/prisma-types" // adjust path as needed
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Dealer {
+  id    Int          @id @default(autoincrement())
+  name  String
+  address String @default("")
+  city String @default("")
+  state String @default("")
+  zipCode String @default("")
+  phone String @default("")
+  email String @default("")
+  lienHolderId String @default("")
+  isActive Boolean @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  users DealerUser[]
+  liens Lien[]
+}
+
+model User {
+  id Int @id @default(autoincrement())
+  address String @default("")
+  city String @default("")
+  state String @default("")
+  zipCode String @default("")
+  phone String @default("")
+   email String @unique
+  name String @default("")
+  password String?
+  isLocalAdmin Boolean @default(false)
+  isGlobalAdmin Boolean @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  isActive Boolean @default(true)
+  users DealerUser[]
+  passwordTokens PasswordToken[]
+}
+
+model DealerUser {
+  id       Int     @id @default(autoincrement())
+  dealerId Int
+  userId   Int
+  isActive Boolean @default(true)
+
+  dealer Dealer @relation(fields: [dealerId], references: [id])
+  user   User   @relation(fields: [userId], references: [id])
+
+  @@unique([dealerId, userId])
+}
+
+model Lien {
+  id         Int      @id @default(autoincrement())
+  dealerId   Int
+  vehicleId  Int
+  rank  Int @default(1)
+  status  Int @default(0) // 0: received, 1: submitted, 2: sent, 3: confirmed, 4: rejected
+  lienholder String @default("")
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  readFlag  Boolean @default(false)
+
+  dealer Dealer @relation(fields: [dealerId], references: [id])
+  vehicle Vehicle @relation(fields: [vehicleId], references: [id])
+
+  @@unique([dealerId, vehicleId])
+}
+
+model Vehicle {
+  id        Int      @id @default(autoincrement())
+  vin       String   @unique
+  make      String @default("")
+  model     String @default("")
+  year      Int @default(0)
+  color     String @default("")
+  mileage   Int @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  liens  Lien[]  // reverse relation
+}
+
+model PasswordToken {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  expiresAt DateTime
+  type      String // 'setup' or 'reset'
+}
