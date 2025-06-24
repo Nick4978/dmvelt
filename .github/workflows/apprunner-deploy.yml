@@ -49,22 +49,14 @@ jobs:
           docker push $ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/$FRONTEND_IMAGE:latest
 
       # Step 3: Deploy frontend container to App Runner
-      - name: Deploy frontend to App Runner
-        id: deploy-frontend
-        uses: awslabs/amazon-app-runner-deploy@main
-        with:
-          service: my-frontend-app
-          image-repository: ${{ secrets.AWS_ECR_FRONT_REPO }}
-          image-tag: latest
+      - name: Trigger App Runner deployment for backend
+        run: |
+          aws apprunner start-deployment --service-arn ${{ secrets.APP_RUNNER_BACKEND_ARN }}
 
       # Step 4: Deploy backend container to App Runner
-      - name: Deploy backend to App Runner
-        id: deploy-backend
-        uses: awslabs/amazon-app-runner-deploy@main
-        with:
-          service: my-backend-app
-          image-repository: ${{ secrets.AWS_ECR_BACK_REPO }}
-          image-tag: latest
+      - name: Trigger App Runner deployment for frontend
+        run: |
+          aws apprunner start-deployment --service-arn ${{ secrets.APP_RUNNER_FRONTEND_ARN }}
 
       - name: URLs
         run: |
