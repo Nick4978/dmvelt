@@ -13,8 +13,8 @@ jobs:
     env:
       REGION: ${{ secrets.AWS_REGION }}
       ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
-      BACKEND_IMAGE: my-backend-app
-      FRONTEND_IMAGE: my-frontend-app
+      BACKEND_IMAGE: dmvelt-backend
+      FRONTEND_IMAGE: dmvelt-frontend
 
     steps:
       # Step 1: Checkout your repo
