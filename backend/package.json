@@ -6,7 +6,7 @@
     "clean": "rm -rf dist",
     "dev": "ts-node-dev --respawn --transpile-only ./src/server.ts",
     "build": "npm run clean && tsc",
-    "start": "node dist/server.js",
+    "start": "node src/server.js",
     "generate:types": "json2ts -i ./prisma/json-schema/json-schema.json -o ../shared/api-types.ts"
   },
   "dependencies": {

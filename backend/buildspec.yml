@@ -1,0 +1,9 @@
+version: 1.0
+runtime: nodejs
+build:
+  commands:
+    - npm install
+    - npm run build
+start:
+  command: node src/server.js
+  port: 4000

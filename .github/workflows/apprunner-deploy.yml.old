@@ -49,14 +49,20 @@ jobs:
           docker push $ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/$FRONTEND_IMAGE:latest
 
       # Step 3: Deploy frontend container to App Runner
-      - name: Trigger App Runner deployment for backend
+      - name: Set Git credentials for CodeCommit
         run: |
-          aws apprunner start-deployment --service-arn ${{ secrets.APP_RUNNER_BACKEND_ARN }}
+          git config --global credential.helper '!aws codecommit credential-helper $@'
+          git config --global credential.UseHttpPath true
 
       # Step 4: Deploy backend container to App Runner
-      - name: Trigger App Runner deployment for frontend
+      - name: Push frontend to CodeCommit
         run: |
-          aws apprunner start-deployment --service-arn ${{ secrets.APP_RUNNER_FRONTEND_ARN }}
+          cd frontend
+          git init
+          git remote add codecommit https://git-codecommit.${{ secrets.AWS_REGION }}.amazonaws.com/v1/repos/dmvelt-frontend
+          git add .
+          git commit -m "Sync frontend from GitHub"
+          git push --force codecommit main
 
       - name: URLs
         run: |
