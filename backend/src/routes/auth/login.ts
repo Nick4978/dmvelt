@@ -2,11 +2,9 @@ import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { Request, Response } from "express";
-import {
-  AuthLoginRequest,
-  AuthLoginResponse,
-} from "../../../../shared/types/DealerSummary";
-import { DealerSummary } from "../../../../shared/types/DealerSummary";
+import { AuthLoginRequest } from "../../../../shared/types/";
+import { AuthLoginResponse } from "../../../../shared/types/";
+import { DealerSummary } from "../../../../shared/types/";
 
 const prisma = new PrismaClient();
 
